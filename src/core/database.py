@@ -2,6 +2,8 @@ import logging
 import os
 from typing import Any, AsyncGenerator
 
+from src.models.reader import Reader
+
 IS_TEST = os.getenv("IS_TEST") == "1"
 
 from advanced_alchemy.config import SQLAlchemyAsyncConfig
@@ -44,3 +46,6 @@ async def init_db():
 
 class UserRepository(SQLAlchemyAsyncRepository[User]):
     model_type = User
+
+class ReaderRepository(SQLAlchemyAsyncRepository[Reader]):
+    model_type = Reader
