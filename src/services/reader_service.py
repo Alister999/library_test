@@ -58,22 +58,22 @@ async def get_readers_all(db: AsyncSession) -> List[ReaderResponse]:
 async def get_this_reader(reader_id: int, db: AsyncSession) -> ReaderResponse:
     logger.info("Incoming to get reader func")
     repo = ReaderRepository(session=db)
-    getting_user = await repo.get_one_or_none(Reader.id == reader_id)
-    if not getting_user:
+    getting_reader = await repo.get_one_or_none(Reader.id == reader_id)
+    if not getting_reader:
         logger.warning(f"Reader with id '{reader_id}' is absent")
         raise HTTPException(
             status_code=404,
             detail=f"Reader with id '{reader_id}' is absent"
         )
-    re_formatted_reader = ReaderResponse.model_validate(getting_user)
+    re_formatted_reader = ReaderResponse.model_validate(getting_reader)
     return re_formatted_reader
 
 
 async def change_this_reader(data: ReaderCreate, reader_id: int, db: AsyncSession) -> ReaderResponse:
     logger.info("Incoming to change reader func")
     repo = ReaderRepository(session=db)
-    changeable_user = await repo.get_one_or_none(Reader.id == reader_id)
-    if not changeable_user:
+    changeable_reader = await repo.get_one_or_none(Reader.id == reader_id)
+    if not changeable_reader:
         logger.warning(f"Reader with id '{reader_id}' is absent")
         raise HTTPException(
             status_code=404,
@@ -87,12 +87,12 @@ async def change_this_reader(data: ReaderCreate, reader_id: int, db: AsyncSessio
         )
     for key, value in data.model_dump().items():
         if key != "id":
-            setattr(changeable_user, key, value)
+            setattr(changeable_reader, key, value)
 
     logger.info("Update reader to repo")
-    await repo.update(changeable_user)
+    await repo.update(changeable_reader)
     await db.commit()
-    await db.refresh(changeable_user)
+    await db.refresh(changeable_reader)
 
-    re_formatted_reader = ReaderResponse.model_validate(changeable_user)
+    re_formatted_reader = ReaderResponse.model_validate(changeable_reader)
     return re_formatted_reader

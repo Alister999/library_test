@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Any, AsyncGenerator
 
+from src.models.book import Book
 from src.models.reader import Reader
 
 IS_TEST = os.getenv("IS_TEST") == "1"
@@ -29,6 +30,8 @@ def get_config() -> SQLAlchemyAsyncConfig:
     )
     return SQLAlchemyAsyncConfig(connection_string=url)
 
+sync_database_url = f"postgresql+psycopg2://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:5432/{settings.DB_NAME}"
+
 
 async def get_db() -> AsyncGenerator[Any, Any]:
     logger.info("Try to get DB")
@@ -49,3 +52,6 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
 
 class ReaderRepository(SQLAlchemyAsyncRepository[Reader]):
     model_type = Reader
+
+class BookRepository(SQLAlchemyAsyncRepository[Book]):
+    model_type = Book
